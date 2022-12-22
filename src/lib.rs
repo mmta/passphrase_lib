@@ -3,10 +3,10 @@
 //! years to crack using specialized password cracking computers or taking forever for normal
 //! computers to crack.
 //!
-//!At the moment(an English only version is coming soon), 
+//!At the moment(an English only version is coming soon),
 //! it combines English and Swahili dictionaries of short easy to type words.
-//! The `zxcvbn` crate, a password strength estimator based off of Dropbox's zxcvbn library, 
-//!has been used to counter-check how long it would take to crack the password, 
+//! The `zxcvbn` crate, a password strength estimator based off of Dropbox's zxcvbn library,
+//!has been used to counter-check how long it would take to crack the password,
 //!the number of guesses it would need and the number of years it would take to crack the passphrase.
 //!
 //! However, kindly node that this is only a passphrase generator and you need to hash it with
@@ -30,22 +30,22 @@
 //!  fn main() {
 //!        // Generate a random passphrase
 //!  	let random_number = passphrase_lib::gen_passphrase();
-//!  
+//!
 //!  		//Generate a random url
 //!  	let random_url = passphrase_lib::gen_url();
 //!  }
 //!  ```
-//! 
+//!
 //!  ---
 #![forbid(unsafe_code)]
 mod dictionary;
 
 use crate::dictionary::*;
-use nanorand::{RNG, ChaCha};
+use nanorand::{ Rng, ChaCha };
 
-fn choose_a_word(data_type: &'static[&'static str]) -> &str {
+fn choose_a_word(data_type: &'static [&'static str]) -> &str {
     let size = data_type.len();
-    let data_type = data_type[ChaCha::new(32).generate_range(0, size)];
+    let data_type = data_type[ChaCha::<32>::new().generate_range(0..size)];
     data_type
 }
 
@@ -55,10 +55,15 @@ pub fn gen_passphrase() -> String {
     let third_iteration = SWAHILI;
     let fourth_iteration = ENGLISH;
 
-    let passphr = format!("{} {} {} {}", choose_a_word(second_iteration), choose_a_word(first_iteration),  choose_a_word(fourth_iteration), choose_a_word(third_iteration));
-    
-    passphr
+    let passphr = format!(
+        "{} {} {} {}",
+        choose_a_word(second_iteration),
+        choose_a_word(first_iteration),
+        choose_a_word(fourth_iteration),
+        choose_a_word(third_iteration)
+    );
 
+    passphr
 }
 
 pub fn gen_url() -> String {
@@ -66,14 +71,23 @@ pub fn gen_url() -> String {
     let second_iteration = ENGLISH;
     let fourth_iteration = ENGLISH;
 
-    let passphr = format!("{}-{}-{}", choose_a_word(second_iteration), choose_a_word(first_iteration),  choose_a_word(fourth_iteration));
-    
+    let passphr = format!(
+        "{}-{}-{}",
+        choose_a_word(second_iteration),
+        choose_a_word(first_iteration),
+        choose_a_word(fourth_iteration)
+    );
+
     passphr
 }
 
 pub fn english() -> String {
+    let passphr = format!(
+        "{}-{}-{}",
+        choose_a_word(ENGLISH),
+        choose_a_word(ENGLISH),
+        choose_a_word(ENGLISH)
+    );
 
-    let passphr = format!("{}-{}-{}", choose_a_word(ENGLISH), choose_a_word(ENGLISH),  choose_a_word(ENGLISH));
-    
     passphr
 }
